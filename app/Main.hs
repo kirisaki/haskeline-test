@@ -1,6 +1,7 @@
 module Main where
 
 import System.Console.Haskeline
+import qualified Data.List as L
 
 main :: IO ()
 main =
@@ -15,5 +16,17 @@ main =
           outputStrLn $ "Input was: " ++ input
           loop
   in do
-    runInputT defaultSettings (withInterrupt loop)
+    runInputT setting (withInterrupt loop)
 
+search :: String -> [Completion]
+search str = fmap simpleCompletion $ filter (L.isPrefixOf str)
+             [ "hoge"
+             , "fuga"
+             , "piyo"
+             ]
+
+setting :: Settings IO
+setting = Settings { historyFile = Nothing
+                   , complete = completeWord Nothing " \t" $ pure . search
+                   , autoAddHistory = True
+                   }
